@@ -136,6 +136,7 @@ const styles = StyleSheet.create({
 export default QuoteListScreen;
 **/
 
+/** 
 import { useState, useEffect } from "react";
 import { 
   View, 
@@ -217,5 +218,114 @@ const styles = StyleSheet.create({
     color: "white" 
   },
 });
+**/
+import { useState, useEffect } from "react";
+import { 
+  View, 
+  Text, 
+  FlatList, 
+  StyleSheet, 
+  Button, 
+  Alert, 
+  ImageBackground, 
+  TouchableOpacity 
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
+export default function QuoteListScreen() {  
+  const [quotes, setQuotes] = useState<string[]>([]);
 
+  useEffect(() => {
+    loadQuotes();
+  }, []);
+
+  const loadQuotes = async () => {
+    try {
+      const storedQuotes = await AsyncStorage.getItem("exploreQuotes");
+      setQuotes(storedQuotes ? JSON.parse(storedQuotes) : []);
+    } catch (error) {
+      console.error("Error loading quotes:", error);
+    }
+  };
+
+  const removeQuote = async (quoteToRemove: string) => {
+    try {
+      const updatedQuotes = quotes.filter((q) => q !== quoteToRemove);
+      await AsyncStorage.setItem("exploreQuotes", JSON.stringify(updatedQuotes));
+      setQuotes(updatedQuotes);
+    } catch (error) {
+      console.error("Error removing quote:", error);
+    }
+  };
+
+  const restartList = async () => {
+    try {
+      await AsyncStorage.removeItem("exploreQuotes"); 
+      setQuotes([]); 
+      Alert.alert("Success", "The list has been restarted!");
+    } catch (error) {
+      console.error("Error resetting quotes:", error);
+      Alert.alert("Error", "Could not restart the list.");
+    }
+  };
+
+  return (
+    <ImageBackground 
+      source={{ uri: "https://images.pexels.com/photos/5708064/pexels-photo-5708064.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" }} 
+      style={styles.background}
+    >
+      <View style={styles.overlay}>
+        <FlatList
+          data={quotes}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <View style={styles.quoteRow}>
+              <Text style={styles.quote}>{item}</Text>
+              <TouchableOpacity onPress={() => removeQuote(item)}>
+                <Text style={styles.closeButton}>❌</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          ListEmptyComponent={<Text style={styles.noQuotes}>No quotes available.</Text>}
+        />
+        <Button title="Restart List" onPress={restartList} color="red" />
+      </View>
+    </ImageBackground>
+  );
+}
+
+const styles = StyleSheet.create({
+  background: { 
+    flex: 1, 
+    resizeMode: "cover", 
+  },
+  overlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Dark overlay for readability
+  },
+  quoteRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 10,
+    width: "100%",
+  },
+  quote: { 
+    fontSize: 16, 
+    color: "white",
+    flex: 1,
+  },
+  closeButton: {
+    fontSize: 26, // Bigger cross symbol
+    color: "white",
+  },
+  noQuotes: { 
+    fontSize: 16, 
+    textAlign: "center", 
+    marginBottom: 20, 
+    color: "white" 
+  },
+});
