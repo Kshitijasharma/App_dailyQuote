@@ -33,8 +33,8 @@ A **React Native app** that displays an **inspirational quote** each day. Users 
 
 ### 1️⃣ **Clone the Repository**  
 ```sh
-git clone https://github.com/yourusername/inspirational-quotes-app.git
-cd inspirational-quotes-app
+git clone https://github.com/Kshitijasharma/App_dailyQuote.git
+cd app
 ```
 
 ### 2️⃣ **Install Dependencies**  
