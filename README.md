@@ -134,3 +134,5 @@ Want to improve this app? Feel free to submit a **pull request**!
 ## License  
 
 This project is licensed under the **MIT License**.  
+
+Adding a small line to leanr the basic commands of git version using this repo for practical learning.
